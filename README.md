@@ -1,113 +1,243 @@
 # 日常习惯打卡 App
 
-这是一个帮助用户跟踪和记录日常习惯的 Android 原生应用。
+<div align="center">
 
-## 功能特性
+一款简洁优雅的 Android 原生习惯追踪应用，帮助你养成良好的日常习惯。
+
+[功能特性](#功能特性) • [技术栈](#技术栈) • [快速开始](#快速开始) • [使用说明](#使用说明)
+
+---
+
+## 📱 功能特性
 
 ### 核心功能
-- ✅ **习惯管理**：创建、编辑、删除习惯
-- ✅ **今日打卡**：在首页快速完成/取消今日打卡
-- ✅ **月度日历**：可视化查看每月打卡情况
-- ✅ **年度统计**：展示过去12个月的打卡统计
-- ✅ **补卡功能**：支持补签历史日期
-- ✅ **图标库**：内置多种习惯图标供选择
-- ✅ **本地存储**：完全离线使用，数据存储在本地
+- ✅ **快速打卡** - 首页单击即可完成今日打卡，再次点击取消打卡
+- 📊 **数据统计** - 长按习惯进入详情页，查看月度和年度统计
+- 🎨 **自定义外观** - 为每个习惯选择图标和颜色
+- 📅 **日历视图** - 月度打卡日历，直观展示坚持情况
+- 🔄 **补卡功能** - 支持在日历中补录过去的打卡记录
+- 📈 **年度统计** - 热力图展示全年打卡数据
+- 💾 **本地存储** - 完全离线使用，数据安全可靠
 
-### 技术栈
-- **语言**：Kotlin
-- **UI框架**：Jetpack Compose
-- **数据库**：Room
-- **架构**：MVVM + Repository Pattern
-- **导航**：Navigation Compose
-- **异步处理**：Kotlin Coroutines + Flow
+### 界面特点
+- 🎯 Material Design 3 设计风格
+- 🌈 多彩图标和颜色选择
+- 🖼️ 支持自定义首页背景
+- 📱 简洁直观的操作体验
 
-## 项目结构
+## 🛠️ 技术栈
 
+- **语言**: Kotlin
+- **UI 框架**: Jetpack Compose
+- **架构**: MVVM + Repository Pattern
+- **数据库**: Room Database
+- **异步处理**: Kotlin Coroutines & Flow
+- **依赖注入**: Hilt (可选)
+- **构建工具**: Gradle (Kotlin DSL)
+
+### 主要依赖
+```kotlin
+// Jetpack Compose
+androidx.compose.ui
+androidx.compose.material3
+androidx.compose.material:material-icons-extended
+
+// Room Database
+androidx.room:room-runtime
+androidx.room:room-ktx
+
+// Lifecycle & ViewModel
+androidx.lifecycle:lifecycle-viewmodel-compose
+androidx.lifecycle:lifecycle-runtime-compose
 ```
-app/
-├── data/
-│   ├── model/          # 数据模型（Entity）
-│   ├── dao/            # 数据访问对象
-│   ├── database/       # Room 数据库
-│   └── repository/     # 数据仓库
-├── ui/
-│   ├── screen/         # UI 界面
-│   ├── viewmodel/      # ViewModel
-│   └── theme/          # 主题配置
-└── utils/              # 工具类
-```
 
-## 数据库设计
+---
 
-### habits 表
-- id: 习惯ID
-- name: 习惯名称
-- icon: 图标ID
-- color: 颜色
-- created_at: 创建时间
-- updated_at: 更新时间
-- order_index: 显示顺序
-- is_archived: 是否归档
-
-### checkins 表
-- id: 打卡记录ID
-- habit_id: 关联的习惯ID
-- date: 打卡日期（YYYY-MM-DD）
-- timestamp: 打卡时间戳
-
-## 使用说明
-
-1. **创建习惯**：点击首页右下角的 "+" 按钮
-2. **完成打卡**：在首页点击习惯卡片即可完成今日打卡
-3. **取消打卡**：再次点击已打卡的习惯卡片可取消
-4. **查看详情**：长按习惯卡片进入详情页
-5. **补卡**：在详情页的日历中点击过去的日期进行补卡
-6. **年度统计**：在详情页点击"查看年度统计"按钮
-
-## 构建运行
+## 🚀 快速开始
 
 ### 环境要求
-- Android Studio Hedgehog | 2023.1.1 或更高版本
-- JDK 17
-- Android SDK 34
-- 最低支持 Android 7.0 (API 24)
+- Android Studio Hedgehog (2023.1.1) 或更高版本
+- JDK 17 或更高版本
+- Android SDK 34 (Android 14)
+- Gradle 8.2+
 
-### 运行步骤
-1. 使用 Android Studio 打开项目
-2. 等待 Gradle 同步完成
+### 克隆项目
+```bash
+git clone https://github.com/你的用户名/habitRecord.git
+cd habitRecord
+```
+
+### 打开项目
+1. 使用 Android Studio 打开项目文件夹
+2. 等待 Gradle 自动同步依赖
 3. 连接 Android 设备或启动模拟器
-4. 点击 Run 按钮运行应用
+4. 点击运行按钮 ▶️
 
-## 测试
-
-### 运行单元测试
+### 构建 APK
 ```bash
-./gradlew test
+# Windows
+.\gradlew.bat assembleDebug
+
+# Linux/Mac
+./gradlew assembleDebug
 ```
 
-### 运行集成测试
-```bash
-./gradlew connectedAndroidTest
+生成的 APK 位于: `app/build/outputs/apk/debug/app-debug.apk`
+
+---
+
+## 📖 使用说明
+
+### 基本操作
+1. **添加习惯**
+   - 点击右下角的 ➕ 按钮
+   - 输入习惯名称（如：健身、阅读、跑步）
+   - 选择喜欢的图标和颜色
+   - 点击"保存"
+
+2. **每日打卡**
+   - 在首页单击习惯卡片即可打卡
+   - 打卡后卡片会以习惯颜色高亮显示
+   - 再次点击可以取消今日打卡
+
+3. **查看统计**
+   - 长按习惯卡片进入统计页面
+   - 查看总完成天数
+   - 浏览月度打卡日历
+   - 查看年度统计热力图
+
+4. **编辑习惯**
+   - 在统计页面点击"编辑习惯"
+   - 修改名称、图标或颜色
+   - 或者删除该习惯
+
+5. **补录打卡**
+   - 在月度日历中点击过去的日期
+   - 可以补录遗漏的打卡记录
+
+### 自定义背景
+如需更换首页背景图片：
+1. 将图片文件重命名为 `home_background.jpg` 或 `home_background.png`
+2. 放入 `app/src/main/res/drawable/` 目录
+3. 重新构建应用
+
+---
+
+## 📁 项目结构
+
+```
+app/src/main/java/com/habitrecord/app/
+├── data/
+│   ├── database/        # Room 数据库
+│   ├── model/           # 数据模型
+│   └── repository/      # 数据仓库层
+├── ui/
+│   ├── screen/          # Compose 界面
+│   │   ├── HomeScreen.kt
+│   │   ├── AddEditHabitScreen.kt
+│   │   └── HabitDetailScreen.kt
+│   ├── components/      # 可复用组件
+│   └── theme/           # Material3 主题
+├── utils/               # 工具类
+│   ├── HabitIcons.kt
+│   └── DateUtils.kt
+├── viewmodel/           # ViewModel 层
+└── MainActivity.kt      # 应用入口
 ```
 
-## 隐私说明
+---
 
-本应用完全离线运行，所有数据仅保存在设备本地，不会上传到任何服务器。
+## 🎨 可用图标
 
-## 后续计划
+应用内置了丰富的图标供选择：
+- 🏃 运动类：跑步、健身、自行车、游泳等
+- 📚 学习类：书籍、学校、电脑、笔记等
+- 🎵 娱乐类：音乐、游戏、相机、电影等
+- 💪 健康类：医疗、水滴、心跳、快餐等
+- ⏰ 时间类：闹钟、日历、计时器等
+- ✨ 其他：星星、咖啡、购物、旅行等
 
-- [ ] 习惯提醒通知
-- [ ] 云备份同步
-- [ ] 数据导出/导入
-- [ ] 成就系统
-- [ ] 数据可视化增强
+共 30+ 个精心挑选的图标可供使用。
+
+---
+
+## 🔄 数据库架构
+
+### Habit (习惯表)
+```kotlin
+@Entity(tableName = "habits")
+data class Habit(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String,           // 习惯名称
+    val icon: String,           // 图标 ID
+    val color: String,          // 颜色值 (#RRGGBB)
+    val createdAt: Long,        // 创建时间戳
+    val sortOrder: Int = 0      // 排序顺序
+)
+```
+
+### CheckIn (打卡记录表)
+```kotlin
+@Entity(tableName = "check_ins")
+data class CheckIn(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val habitId: Long,          // 关联的习惯 ID
+    val date: String,           // 打卡日期 (yyyy-MM-dd)
+    val timestamp: Long         // 打卡时间戳
+)
+```
+
+---
+
+## 🤝 贡献指南
+
+欢迎提交 Issue 和 Pull Request！
+
+### 开发流程
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交 Pull Request
+
+### 代码规范
+- 遵循 Kotlin 官方编码规范
+- 使用有意义的变量和函数名
+- 添加必要的注释
+- 保持代码简洁和可读性
+
+---
+
+## 📝 待办事项
+
+- [ ] 添加习惯分类功能
+- [ ] 支持习惯提醒通知
+- [ ] 数据导出/导入功能
+- [ ] 云端同步（可选）
+- [ ] 更多统计图表类型
+- [ ] 深色模式优化
+- [ ] 小部件支持
 - [ ] 多语言支持
 
-## 开源协议
+---
 
-MIT License
+## 📄 开源协议
 
-## 作者
+本项目采用 [MIT License](LICENSE) 开源协议。
 
-Habit Record Team
+---
+
+## 🙏 致谢
+
+- [Material Icons](https://fonts.google.com/icons) - 图标资源
+- [Jetpack Compose](https://developer.android.com/jetpack/compose) - UI 框架
+- [Room Database](https://developer.android.com/training/data-storage/room) - 数据持久化
+
+---
+
+<div align="center">
+
+**如果这个项目对你有帮助，请给它一个 ⭐️ Star！**
+
+Made with ❤️ and Kotlin
 

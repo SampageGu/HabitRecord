@@ -1,14 +1,51 @@
-.gradle
-.idea
-*.iml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle files
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# Local configuration file (sdk path, etc)
 local.properties
 
+# Android Studio
+.idea/
+*.iml
+.DS_Store
 
-# Project exclude paths
-/app/build/
-/app/build/intermediates/javac/debug/classes/
+# External native build folder
+.externalNativeBuild/
+.cxx/
+
+# Captures folder
+/captures
+
+# Build outputs
+*.apk
+*.ap_
+*.aab
+app/build/
+app/release/
+app/debug/
+
+# Signing files
+*.jks
+*.keystore
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# 中文文档（如果不想提交）
+# *.md
+# 如果想保留 README.md，上面这行保持注释状态
