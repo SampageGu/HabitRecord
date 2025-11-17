@@ -6,7 +6,12 @@ import com.habitrecord.app.data.model.CheckinEntity
 import com.habitrecord.app.data.model.HabitEntity
 import com.habitrecord.app.data.model.HabitWithStats
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -19,22 +24,33 @@ class HabitRepository(
 ) {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val checkinMutex = Mutex() // 添加互斥锁防止并发问题
+    private val dateChangeTrigger = MutableStateFlow(0L) // 用于触发日期变化的信号
+
+    // 通知日期已改变
+    fun notifyDateChanged() {
+        dateChangeTrigger.value = System.currentTimeMillis()
+    }
 
     // 获取所有习惯（带统计信息）- 优化版本，使用 Flow 组合实现响应式更新
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllHabitsWithStats(): Flow<List<HabitWithStats>> {
-        val today = LocalDate.now().format(dateFormatter)
+        // 当日期变化触发器改变时，重新获取最新的今日打卡记录
+        return dateChangeTrigger.flatMapLatest {
+            val today = LocalDate.now().format(dateFormatter)
 
-        // 组合习惯列表和今日打卡记录，实现响应式更新
-        return combine(
-            habitDao.getAllHabits(),
-            checkinDao.getCheckinsByDate(today)
-        ) { habits, todayCheckins ->
-            val todayCheckinHabitIds = todayCheckins.map { it.habitId }.toSet()
+            // 组合习惯列表和今日打卡记录
+            combine(
+                habitDao.getAllHabits(),
+                checkinDao.getCheckinsByDate(today)
+            ) { habits, todayCheckins ->
+                val todayCheckinHabitIds = todayCheckins.map { it.habitId }.toSet()
 
-            habits.map { habit ->
-                val totalDays = checkinDao.countByHabit(habit.id)
-                val checkedToday = todayCheckinHabitIds.contains(habit.id)
-                HabitWithStats(habit, totalDays, checkedToday)
+                habits.map { habit ->
+                    val totalDays = checkinDao.countByHabit(habit.id)
+                    val checkedToday = todayCheckinHabitIds.contains(habit.id)
+                    HabitWithStats(habit, totalDays, checkedToday)
+                }
             }
         }
     }
@@ -65,28 +81,48 @@ class HabitRepository(
         return habitDao.getHabitById(habitId)
     }
 
-    // 切换今日打卡状态
+    // 切换今日打卡状态（使用互斥锁确保原子性）
     suspend fun toggleTodayCheckin(habitId: Long): Boolean {
-        val today = LocalDate.now().format(dateFormatter)
-        val exists = checkinDao.exists(habitId, today)
+        return checkinMutex.withLock {
+            val today = LocalDate.now().format(dateFormatter)
+            val existingCheckin = checkinDao.getCheckinByHabitAndDate(habitId, today)
 
-        return if (exists) {
-            checkinDao.deleteByHabitAndDate(habitId, today)
-            false // 返回false表示取消打卡
-        } else {
-            checkinDao.insert(CheckinEntity(habitId = habitId, date = today))
-            true // 返回true表示完成打卡
+            if (existingCheckin != null) {
+                // 已打卡，删除记录
+                checkinDao.delete(existingCheckin)
+                false // 返回false表示取消打卡
+            } else {
+                // 未打卡，添加记录
+                val checkin = CheckinEntity(
+                    habitId = habitId,
+                    date = today,
+                    timestamp = System.currentTimeMillis()
+                )
+                checkinDao.insert(checkin)
+                true // 返回true表示完成打卡
+            }
         }
     }
 
     // 添加打卡记录（补卡）
     suspend fun addCheckin(habitId: Long, date: String) {
-        checkinDao.insert(CheckinEntity(habitId = habitId, date = date))
+        checkinMutex.withLock {
+            val existingCheckin = checkinDao.getCheckinByHabitAndDate(habitId, date)
+            if (existingCheckin == null) {
+                checkinDao.insert(CheckinEntity(
+                    habitId = habitId,
+                    date = date,
+                    timestamp = System.currentTimeMillis()
+                ))
+            }
+        }
     }
 
     // 删除打卡记录
     suspend fun deleteCheckin(habitId: Long, date: String) {
-        checkinDao.deleteByHabitAndDate(habitId, date)
+        checkinMutex.withLock {
+            checkinDao.deleteByHabitAndDate(habitId, date)
+        }
     }
 
     // 获取指定月份的打卡记录

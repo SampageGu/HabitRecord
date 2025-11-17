@@ -21,10 +21,12 @@ import com.habitrecord.app.data.repository.HabitRepository
 import com.habitrecord.app.ui.screen.*
 import com.habitrecord.app.ui.theme.HabitRecordTheme
 import com.habitrecord.app.ui.viewmodel.*
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var repository: HabitRepository
+    private var lastDate: LocalDate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +45,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 检查日期是否变化
+        val currentDate = LocalDate.now()
+        if (lastDate != null && lastDate != currentDate) {
+            // 日期已改变，通知 repository 刷新数据
+            repository.notifyDateChanged()
+        }
+        lastDate = currentDate
     }
 }
 
